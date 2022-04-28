@@ -8,7 +8,12 @@
 class StateMachine
 {
 public:
-	StateMachine();
+	struct Config {
+		bool settingA{};
+		bool settingB{};
+	};
+
+	StateMachine(const Config& config = Config{});
 	~StateMachine();
 
 	// each state performs a narrowly defined task
@@ -20,17 +25,13 @@ public:
 		Disabled
 	};
 
-	struct Config {
-		bool settingA{};
-		bool settingB{};
-	};
-
 	using Speed = uint32_t;
 
 	void start(const Config& config);
 	void stop();
 
 	// queue event functions
+	void queueStartEvent(const Config& config);
 	void queueIdleEvent();
 	void queueRunEvent(Speed speed);
 	void queueDisableEvent();
@@ -61,17 +62,21 @@ private:
 		std::promise<void>* finished = nullptr;
 	};
 
+	void enable();
+	void disable();
+
 	void eventQueueProc();
-	void queueEvent(const Event& type);
+	void queueEvent(const Event& event);
 	void handleEvent(const Event& event);
-	bool handleEventWhileIdle(const Event& event);
-	bool handleEventWhileActive(const Event& event);
+	void handleEventWhileIdle(const Event& event);
+	void handleEventWhileActive(const Event& event);
+	void handleEventInStartup(const Event& event);
 
 	std::atomic<State> m_state{ State::Startup };
 	std::atomic<Config> m_config{};
 
 	std::mutex m_queueMutex;
-	std::queue<EventType> m_eventQueue;
+	std::queue<Event> m_eventQueue;
 	std::condition_variable m_itemQueued;
 
 	std::thread m_eventQueueThread;
