@@ -163,6 +163,11 @@ void StateMachine::handleEvent(const Event& event)
 		}
 		break;
 	}
+
+	if (event.finished)
+	{
+		event.finished->set_value();
+	}
 }
 
 void StateMachine::enable()
