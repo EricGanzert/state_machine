@@ -9,11 +9,12 @@ class StateMachine
 {
 public:
 	struct Config {
-		bool settingA{};
-		bool settingB{};
+		bool settingA = false;
+		bool settingB = false;
 	};
 
-	StateMachine(const Config& config = Config{});
+	StateMachine();
+	StateMachine(const Config& config);
 	~StateMachine();
 
 	// each state performs a narrowly defined task

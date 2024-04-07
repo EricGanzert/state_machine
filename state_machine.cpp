@@ -11,6 +11,12 @@ StateMachine::StateMachine(const Config& config)
 	
 }
 
+StateMachine::StateMachine()
+	: m_eventQueueThread(thread(&StateMachine::eventQueueProc, this))
+{
+
+}
+
 StateMachine::~StateMachine()
 {
 	if (m_state != State::Disabled)
